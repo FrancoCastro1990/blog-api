@@ -76,9 +76,9 @@ export class PostsController {
       logger.error(defaultMessage, error);
       
       // Don't expose internal error details in production
-      const message = process.env.NODE_ENV === 'development' 
-        ? error.message 
-        : 'Internal server error';
+      const message = process.env.NODE_ENV === 'production' 
+        ? 'Internal server error'
+        : error.message;
       
       res.status(500).json({
         error: message,

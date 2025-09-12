@@ -7,8 +7,13 @@ export class Logger {
     const timestamp = new Date().toISOString();
     const baseMessage = `[${timestamp}] ${level.toUpperCase()}: ${message}`;
     
-    if (meta) {
-      return `${baseMessage} ${JSON.stringify(meta)}`;
+    if (meta !== undefined && meta !== null) {
+      try {
+        return `${baseMessage} ${JSON.stringify(meta)}`;
+      } catch (error) {
+        // Handle circular references by replacing circular refs with placeholder
+        return `${baseMessage} [Circular Reference Object]`;
+      }
     }
     
     return baseMessage;
