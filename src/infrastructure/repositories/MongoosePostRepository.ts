@@ -14,7 +14,9 @@ export class MongoosePostRepository implements PostRepository {
    */
   async create(post: Post): Promise<Post> {
     try {
-      const mongoosePost = new MongoosePostModel(post);
+      // Don't include the id in the data sent to MongoDB, let MongoDB generate the _id
+      const { id, ...postData } = post;
+      const mongoosePost = new MongoosePostModel(postData);
       const savedPost = await mongoosePost.save();
       return this.mapDocumentToEntity(savedPost);
     } catch (error) {
@@ -48,7 +50,8 @@ export class MongoosePostRepository implements PostRepository {
    */
   async findById(id: string): Promise<Post | null> {
     try {
-      const post = await MongoosePostModel.findOne({ id }).exec();
+      // Use MongoDB's _id field to search since that's what we store
+      const post = await MongoosePostModel.findById(id).exec();
       return post ? this.mapDocumentToEntity(post) : null;
     } catch (error) {
       if (error instanceof Error) {
@@ -65,7 +68,7 @@ export class MongoosePostRepository implements PostRepository {
    */
   private mapDocumentToEntity(document: MongoosePostDocument): Post {
     return {
-      id: document.id,
+      id: (document as any)._id.toString(), // Map MongoDB _id to domain id
       title: document.title,
       content: document.content,
       author: document.author,
