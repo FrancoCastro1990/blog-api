@@ -21,13 +21,11 @@ export interface UserModel extends Model<UserDocument> {
 const RefreshTokenSchema = new Schema<RefreshTokenData>({
   token: {
     type: String,
-    required: true,
-    index: true
+    required: true
   },
   expiresAt: {
     type: Date,
-    required: true,
-    index: true
+    required: true
   },
   createdAt: {
     type: Date,
@@ -43,7 +41,6 @@ const UserSchema = new Schema<UserDocument>({
     unique: true,
     lowercase: true,
     trim: true,
-    index: true,
     validate: {
       validator: function(email: string) {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -68,7 +65,6 @@ const UserSchema = new Schema<UserDocument>({
 });
 
 // Indexes for performance
-UserSchema.index({ email: 1 });
 UserSchema.index({ 'refreshTokens.token': 1 });
 UserSchema.index({ 'refreshTokens.expiresAt': 1 });
 
