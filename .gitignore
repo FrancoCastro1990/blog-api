@@ -94,7 +94,6 @@ logs
 
 # MongoDB dump files
 *.bson
-*.json
 
 # Docker
 .docker/
