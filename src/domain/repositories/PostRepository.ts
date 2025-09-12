@@ -1,0 +1,28 @@
+import { Post } from "../entities/Post";
+
+/**
+ * PostRepository port (interface) defines the contract for data persistence.
+ * This is part of the domain layer and is framework-agnostic.
+ * Concrete implementations will be provided by the infrastructure layer.
+ */
+export interface PostRepository {
+  /**
+   * Creates a new post in the repository
+   * @param post - The post entity to create
+   * @returns Promise resolving to the created post
+   */
+  create(post: Post): Promise<Post>;
+
+  /**
+   * Retrieves all posts from the repository
+   * @returns Promise resolving to an array of all posts
+   */
+  getAll(): Promise<Post[]>;
+
+  /**
+   * Finds a post by its unique identifier
+   * @param id - The unique identifier of the post
+   * @returns Promise resolving to the post if found, null otherwise
+   */
+  findById(id: string): Promise<Post | null>;
+}
