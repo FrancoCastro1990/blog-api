@@ -1,4 +1,4 @@
-import { PasswordService } from "../../../../src/auth/services";
+import { PasswordService } from "../../../../src/domain/services/PasswordService";
 
 describe('PasswordService', () => {
   let passwordService: PasswordService;

@@ -1,8 +1,8 @@
-import { ValidateToken, ValidateTokenRequest } from '../../../../src/auth/usecases/ValidateToken';
-import { UserRepository } from '../../../../src/auth/repositories';
-import { TokenService } from '../../../../src/auth/services';
-import { User, Permission } from '../../../../src/auth/entities';
-import { TokenPayload, TokenType } from '../../../../src/auth/entities/Token';
+import { ValidateToken, ValidateTokenRequest } from '../../../../src/application/usecases/auth/ValidateToken';
+import { UserRepository } from '../../../../src/domain/repositories/UserRepository';
+import { TokenService } from '../../../../src/domain/services/TokenService';
+import { User, Permission } from '../../../../src/domain/entities/User';
+import { TokenPayload, TokenType } from '../../../../src/domain/entities/Token';
 import { logger } from '../../../../src/utils/logger';
 
 // Mock the logger

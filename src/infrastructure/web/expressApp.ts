@@ -2,9 +2,9 @@ import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { ApplicationServices } from '../../application/services';
 import { createPostsRoutes } from './routes/postsRoutes';
-import { createAuthRoutes } from '../../auth/routes';
-import { AuthMiddleware } from '../../auth/middleware';
-import { AuthController } from '../../auth/controllers';
+import { createAuthRoutes } from './routes';
+import { AuthMiddleware } from './middleware';
+import { AuthController } from './controllers';
 import { logger } from '../../utils/logger';
 
 /**

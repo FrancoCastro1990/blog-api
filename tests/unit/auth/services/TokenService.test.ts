@@ -1,7 +1,7 @@
-import { User, Permission } from '../../../../src/auth/entities';
-import { TokenType } from '../../../../src/auth/entities/Token';
+import { User, Permission } from '../../../../src/domain/entities/User';
+import { TokenType } from '../../../../src/domain/entities/Token';
 import jwt from 'jsonwebtoken';
-import { TokenService } from '../../../../src/auth/services';
+import { TokenService } from '../../../../src/domain/services/TokenService';
 
 describe('TokenService', () => {
   let tokenService: TokenService;

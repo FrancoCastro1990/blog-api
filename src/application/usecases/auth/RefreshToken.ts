@@ -1,7 +1,7 @@
-import { AuthResponse } from '../entities/Token';
-import { UserRepository } from '../repositories';
-import { TokenService } from '../services';
-import { logger } from '../../utils/logger';
+import { AuthResponse } from '../../../domain/entities/Token';
+import { UserRepository } from '../../../domain/repositories/UserRepository';
+import { TokenService } from '../../../domain/services';
+import { logger } from '../../../utils/logger';
 
 export interface RefreshTokenRequest {
   refreshToken: string;

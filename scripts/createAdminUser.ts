@@ -1,7 +1,7 @@
 import { MongooseConnection } from '../src/infrastructure/database/mongooseConnection';
-import { MongooseUserRepository } from '../src/auth/repositories';
-import { PasswordService } from '../src/auth/services';
-import { Permission } from '../src/auth/entities';
+import { MongooseUserRepository } from '../src/infrastructure/repositories/MongooseUserRepository';
+import { PasswordService } from '../src/domain/services';
+import { Permission } from '../src/domain/entities/User';
 import { logger } from '../src/utils/logger';
 
 /**

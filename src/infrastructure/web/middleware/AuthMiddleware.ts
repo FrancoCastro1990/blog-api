@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { Permission, TokenPayload, TokenType } from '../entities';
-import { ValidateToken } from '../usecases';
-import { logger } from '../../utils/logger';
+import { TokenPayload, TokenType } from '../../../domain/entities/Token';
+import { Permission } from '../../../domain/entities/User';
+import { ValidateToken } from '../../../application/usecases/auth';
+import { logger } from '../../../utils/logger';
 
 // Extend Express Request interface to include auth data
 declare global {

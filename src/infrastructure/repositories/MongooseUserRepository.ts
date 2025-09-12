@@ -1,6 +1,6 @@
-import { UserRepository } from './UserRepository';
-import { User } from '../entities';
-import { UserModel, UserDocument } from './MongooseUserModel';
+import { UserRepository } from '../../domain/repositories/UserRepository';
+import { User } from '../../domain/entities/User';
+import { UserModel, UserDocument } from '../database/MongooseUserModel';
 import { logger } from '../../utils/logger';
 
 export class MongooseUserRepository implements UserRepository {

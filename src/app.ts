@@ -6,11 +6,11 @@ import { createExpressApp } from './infrastructure/web/expressApp';
 import { logger } from './utils/logger';
 
 // Auth dependencies
-import { MongooseUserRepository } from './auth/repositories';
-import { PasswordService, TokenService } from './auth/services';
-import { LoginUser, RefreshToken, ValidateToken } from './auth/usecases';
-import { AuthController } from './auth/controllers';
-import { AuthMiddleware } from './auth/middleware';
+import { MongooseUserRepository } from './infrastructure/repositories/MongooseUserRepository';
+import { PasswordService, TokenService } from './domain/services';
+import { LoginUser, RefreshToken, ValidateToken } from './application/usecases/auth';
+import { AuthController } from './infrastructure/web/controllers';
+import { AuthMiddleware } from './infrastructure/web/middleware';
 
 /**
  * Application class responsible for bootstrapping the entire application

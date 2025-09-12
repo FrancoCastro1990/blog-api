@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { AuthController } from '../../../../src/auth/controllers/authController';
-import { LoginUser, RefreshToken } from '../../../../src/auth/usecases';
-import { User, Permission } from '../../../../src/auth/entities';
-import { TokenType } from '../../../../src/auth/entities/Token';
+import { AuthController } from '../../../../src/infrastructure/web/controllers/AuthController';
+import { LoginUser, RefreshToken } from '../../../../src/application/usecases/auth';
+import { User, Permission } from '../../../../src/domain/entities/User';
+import { TokenType } from '../../../../src/domain/entities/Token';
 import { logger } from '../../../../src/utils/logger';
 
 // Mock the logger

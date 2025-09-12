@@ -1,8 +1,8 @@
-import { TokenPayload, TokenType } from '../entities/Token';
-import { Permission } from '../entities';
-import { UserRepository } from '../repositories';
-import { TokenService } from '../services';
-import { logger } from '../../utils/logger';
+import { TokenPayload, TokenType } from '../../../domain/entities/Token';
+import { Permission } from '../../../domain/entities/User';
+import { UserRepository } from '../../../domain/repositories/UserRepository';
+import { TokenService } from '../../../domain/services';
+import { logger } from '../../../utils/logger';
 
 export interface ValidateTokenRequest {
   token: string;

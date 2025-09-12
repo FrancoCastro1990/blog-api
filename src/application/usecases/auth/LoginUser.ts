@@ -1,8 +1,8 @@
-import { User } from '../entities';
-import { AuthResponse } from '../entities/Token';
-import { UserRepository } from '../repositories';
-import { PasswordService, TokenService } from '../services';
-import { logger } from '../../utils/logger';
+import { User } from '../../../domain/entities/User';
+import { AuthResponse } from '../../../domain/entities/Token';
+import { UserRepository } from '../../../domain/repositories/UserRepository';
+import { PasswordService, TokenService } from '../../../domain/services';
+import { logger } from '../../../utils/logger';
 
 export interface LoginUserRequest {
   email: string;

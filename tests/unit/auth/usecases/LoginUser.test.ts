@@ -1,7 +1,7 @@
-import { LoginUser, LoginUserRequest } from '../../../../src/auth/usecases/LoginUser';
-import { UserRepository } from '../../../../src/auth/repositories';
-import { PasswordService, TokenService } from '../../../../src/auth/services';
-import { User, Permission } from '../../../../src/auth/entities';
+import { LoginUser, LoginUserRequest } from '../../../../src/application/usecases/auth/LoginUser';
+import { UserRepository } from '../../../../src/domain/repositories/UserRepository';
+import { PasswordService, TokenService } from '../../../../src/domain/services';
+import { User, Permission } from '../../../../src/domain/entities/User';
 import { logger } from '../../../../src/utils/logger';
 
 // Mock the logger

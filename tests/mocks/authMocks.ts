@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { Permission } from '../../src/auth/entities';
+import { Permission } from '../../src/domain/entities/User';
 
 /**
  * Mock AuthController for testing purposes

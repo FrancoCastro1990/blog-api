@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { PostsController } from '../controllers/postsController';
 import { ApplicationServices } from '../../../application/services';
-import { AuthMiddleware } from '../../../auth/middleware';
+import { AuthMiddleware } from '../middleware';
 
 /**
  * Creates and configures the posts routes with authentication
