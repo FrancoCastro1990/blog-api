@@ -2,6 +2,7 @@ import request from 'supertest';
 import { createExpressApp } from '../../../../src/infrastructure/web/expressApp';
 import { ApplicationServices } from '../../../../src/application/services';
 import { Post } from '../../../../src/domain/entities/Post';
+import { createMockExpressAppConfig } from '../../../mocks/authMocks';
 
 // Mock application services for isolated testing
 const mockPostRepository = {
@@ -16,7 +17,8 @@ describe('ExpressApp', () => {
   let app: any;
 
   beforeEach(() => {
-    app = createExpressApp(mockApplicationServices);
+    const config = createMockExpressAppConfig(mockApplicationServices);
+    app = createExpressApp(config);
     jest.clearAllMocks();
   });
 
@@ -96,11 +98,20 @@ describe('ExpressApp', () => {
       // Assert
       expect(response.status).toBe(200);
       expect(response.body).toEqual({
-        message: 'Blog Posts API',
+        message: 'Blog Posts API with Authentication',
         version: '1.0.0',
         endpoints: {
           health: '/health',
-          posts: '/api/posts'
+          auth: {
+            login: 'POST /api/auth/login',
+            refresh: 'POST /api/auth/refresh',
+            logout: 'POST /api/auth/logout',
+            me: 'GET /api/auth/me'
+          },
+          posts: {
+            create: 'POST /api/posts (requires CREATE_POSTS permission)',
+            getAll: 'GET /api/posts (requires READ_POSTS permission)'
+          }
         }
       });
     });
@@ -234,7 +245,8 @@ describe('ExpressApp', () => {
       process.env.NODE_ENV = 'production';
       
       // Recreate app with production environment
-      const prodApp = createExpressApp(mockApplicationServices);
+      const prodConfig = createMockExpressAppConfig(mockApplicationServices);
+      const prodApp = createExpressApp(prodConfig);
       mockPostRepository.getAll.mockRejectedValue(new Error('Sensitive database error'));
 
       // Act

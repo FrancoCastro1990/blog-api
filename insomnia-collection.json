@@ -1,21 +1,21 @@
 {
   "_type": "export",
   "__export_format": 4,
-  "__export_date": "2025-09-12T10:00:00.000Z",
+  "__export_date": "2025-09-12T13:30:00.000Z",
   "__export_source": "insomnia.desktop.app:v2023.5.8",
   "resources": [
     {
-      "_id": "req_0",
-      "parentId": "fld_0",
-      "modified": 1694505600000,
-      "created": 1694505600000,
-      "url": "{{ _.base_url }}/api/posts",
-      "name": "Create Post",
-      "description": "Crea un nuevo post en el blog",
+      "_id": "req_auth_1",
+      "parentId": "fld_auth",
+      "modified": 1694509200000,
+      "created": 1694509200000,
+      "url": "{{ _.base_url }}/api/auth/login",
+      "name": "Login",
+      "description": "Iniciar sesión con email y contraseña. Devuelve accessToken (15min) y refreshToken (7 días).",
       "method": "POST",
       "body": {
         "mimeType": "application/json",
-        "text": "{\n  \"title\": \"Mi primer post\",\n  \"content\": \"Este es el contenido de mi primer post en el blog. Aquí puedo escribir todo lo que quiera compartir.\",\n  \"author\": \"Franco Castro\"\n}"
+        "text": "{\n  \"email\": \"{{ _.admin_email }}\",\n  \"password\": \"{{ _.admin_password }}\"\n}"
       },
       "parameters": [],
       "headers": [
@@ -25,6 +25,228 @@
         }
       ],
       "authentication": {},
+      "metaSortKey": -1694509200000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "settingResponseScript": "if (response.getStatusCode() === 200 && response.getBodyText()) {\n  try {\n    const responseData = JSON.parse(response.getBodyText());\n    if (responseData.success && responseData.data) {\n      if (responseData.data.accessToken) {\n        await insomnia.environment.set('access_token', responseData.data.accessToken);\n      }\n      if (responseData.data.refreshToken) {\n        await insomnia.environment.set('refresh_token', responseData.data.refreshToken);\n      }\n    }\n  } catch (e) {\n    console.error('Error parsing response:', e);\n  }\n}"
+    },
+    {
+      "_id": "req_auth_2",
+      "parentId": "fld_auth",
+      "modified": 1694509300000,
+      "created": 1694509300000,
+      "url": "{{ _.base_url }}/api/auth/refresh",
+      "name": "Refresh Token",
+      "description": "Renovar access token usando refresh token. Automáticamente limpia tokens expirados y genera nuevo par de tokens.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"refreshToken\": \"{{ _.refresh_token }}\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1694509100000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "settingResponseScript": "if (insomnia.response.getStatusCode() === 200) {\n  try {\n    const jsonBody = insomnia.response.json();\n    if (jsonBody.success && jsonBody.data) {\n      if (jsonBody.data.accessToken) {\n        insomnia.environment.set('access_token', jsonBody.data.accessToken);\n      }\n      if (jsonBody.data.refreshToken) {\n        insomnia.environment.set('refresh_token', jsonBody.data.refreshToken);\n      }\n    }\n  } catch (e) {\n    console.error('Error parsing response:', e);\n  }\n}"
+    },
+    {
+      "_id": "req_auth_3",
+      "parentId": "fld_auth",
+      "modified": 1694509400000,
+      "created": 1694509400000,
+      "url": "{{ _.base_url }}/api/auth/me",
+      "name": "Get My Info",
+      "description": "Obtener información del usuario autenticado",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.access_token }}"
+      },
+      "metaSortKey": -1694509000000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_auth_4",
+      "parentId": "fld_auth",
+      "modified": 1694509500000,
+      "created": 1694509500000,
+      "url": "{{ _.base_url }}/api/auth/logout",
+      "name": "Logout",
+      "description": "Cerrar sesión (invalidar refresh token)",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"refreshToken\": \"{{ _.refresh_token }}\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.access_token }}"
+      },
+      "metaSortKey": -1694508900000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "settingResponseScript": "if (insomnia.response.getStatusCode() === 200) {\n  // Limpiar tokens después del logout exitoso\n  insomnia.environment.set('access_token', '');\n  insomnia.environment.set('refresh_token', '');\n}"
+    },
+    {
+      "_id": "req_auth_5",
+      "parentId": "fld_auth",
+      "modified": 1694509600000,
+      "created": 1694509600000,
+      "url": "{{ _.base_url }}/api/auth/login",
+      "name": "Login - Invalid Credentials",
+      "description": "Prueba de login con credenciales inválidas",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"wrong@example.com\",\n  \"password\": \"wrongpassword\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1694508800000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_auth_6",
+      "parentId": "fld_auth",
+      "modified": 1694509650000,
+      "created": 1694509650000,
+      "url": "{{ _.base_url }}/api/auth/login",
+      "name": "Login - Test User",
+      "description": "Prueba con usuario de test (solo permisos de lectura)",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"test@blog.com\",\n  \"password\": \"test123456\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1694508700000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request",
+      "settingResponseScript": "if (insomnia.response.getStatusCode() === 200) {\n  try {\n    const jsonBody = insomnia.response.json();\n    if (jsonBody.success && jsonBody.data) {\n      if (jsonBody.data.accessToken) {\n        insomnia.environment.set('access_token', jsonBody.data.accessToken);\n      }\n      if (jsonBody.data.refreshToken) {\n        insomnia.environment.set('refresh_token', jsonBody.data.refreshToken);\n      }\n    }\n  } catch (e) {\n    console.error('Error parsing response:', e);\n  }\n}"
+    },
+    {
+      "_id": "req_auth_7",
+      "parentId": "fld_auth",
+      "modified": 1694509750000,
+      "created": 1694509750000,
+      "url": "{{ _.base_url }}/api/auth/login",
+      "name": "Login - Validation Tests",
+      "description": "Tests de validación con datos inválidos",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"invalid-email\",\n  \"password\": \"\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1694508600000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_create_post",
+      "parentId": "fld_0",
+      "modified": 1694505600000,
+      "created": 1694505600000,
+      "url": "{{ _.base_url }}/api/posts",
+      "name": "Create Post",
+      "description": "Crea un nuevo post en el blog (REQUIERE CREATE_POSTS permission)",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"title\": \"Mi primer post autenticado\",\n  \"content\": \"Este es el contenido de mi primer post en el blog con autenticación. Ahora solo los usuarios autorizados pueden crear posts.\",\n  \"author\": \"Admin User\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.access_token }}"
+      },
       "metaSortKey": -1694505600000,
       "isPrivate": false,
       "settingStoreCookies": true,
@@ -42,12 +264,15 @@
       "created": 1694505600000,
       "url": "{{ _.base_url }}/api/posts",
       "name": "Get All Posts",
-      "description": "Obtiene todos los posts del blog",
+      "description": "Obtiene todos los posts del blog (REQUIERE READ_POSTS permission)",
       "method": "GET",
       "body": {},
       "parameters": [],
       "headers": [],
-      "authentication": {},
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ _.access_token }}"
+      },
       "metaSortKey": -1694505500000,
       "isPrivate": false,
       "settingStoreCookies": true,
@@ -64,12 +289,12 @@
       "modified": 1694505600000,
       "created": 1694505600000,
       "url": "{{ _.base_url }}/api/posts",
-      "name": "Create Post - Validation Error",
-      "description": "Prueba de validación con datos inválidos",
+      "name": "Create Post - Unauthorized",
+      "description": "Intenta crear post sin token de autenticación",
       "method": "POST",
       "body": {
         "mimeType": "application/json",
-        "text": "{\n  \"title\": \"\",\n  \"content\": \"\"\n}"
+        "text": "{\n  \"title\": \"Post sin autorización\",\n  \"content\": \"Este post debería fallar por falta de autenticación\"\n}"
       },
       "parameters": [],
       "headers": [
@@ -95,20 +320,12 @@
       "modified": 1694505600000,
       "created": 1694505600000,
       "url": "{{ _.base_url }}/api/posts",
-      "name": "Create Post - Without Author",
-      "description": "Crea un post sin especificar autor (campo opcional)",
-      "method": "POST",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n  \"title\": \"Post sin autor\",\n  \"content\": \"Este post no tiene autor especificado, ya que es un campo opcional.\"\n}"
-      },
+      "name": "Get Posts - Unauthorized",
+      "description": "Intenta obtener posts sin token de autenticación",
+      "method": "GET",
+      "body": {},
       "parameters": [],
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
-        }
-      ],
+      "headers": [],
       "authentication": {},
       "metaSortKey": -1694505300000,
       "isPrivate": false,
@@ -126,12 +343,12 @@
       "modified": 1694505600000,
       "created": 1694505600000,
       "url": "{{ _.base_url }}/api/posts",
-      "name": "Create Post - Long Content",
-      "description": "Crea un post con contenido extenso para probar límites",
+      "name": "Create Post - Invalid Token",
+      "description": "Intenta crear post con token inválido",
       "method": "POST",
       "body": {
         "mimeType": "application/json",
-        "text": "{\n  \"title\": \"Post con contenido extenso\",\n  \"content\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.\",\n  \"author\": \"Lorem Author\"\n}"
+        "text": "{\n  \"title\": \"Post con token inválido\",\n  \"content\": \"Este post debería fallar por token inválido\"\n}"
       },
       "parameters": [],
       "headers": [
@@ -140,7 +357,10 @@
           "value": "application/json"
         }
       ],
-      "authentication": {},
+      "authentication": {
+        "type": "bearer",
+        "token": "invalid.jwt.token"
+      },
       "metaSortKey": -1694505200000,
       "isPrivate": false,
       "settingStoreCookies": true,
@@ -152,15 +372,85 @@
       "_type": "request"
     },
     {
+      "_id": "req_health",
+      "parentId": "fld_util",
+      "modified": 1694509700000,
+      "created": 1694509700000,
+      "url": "{{ _.base_url }}/health",
+      "name": "Health Check",
+      "description": "Verificar el estado de la API",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1694509700000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_root",
+      "parentId": "fld_util",
+      "modified": 1694509800000,
+      "created": 1694509800000,
+      "url": "{{ _.base_url }}/",
+      "name": "API Info",
+      "description": "Información general de la API y endpoints disponibles",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1694509600000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "fld_auth",
+      "parentId": "wrk_0",
+      "modified": 1694509000000,
+      "created": 1694509000000,
+      "name": "🔐 Authentication",
+      "description": "Endpoints de autenticación y autorización",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1694509000000,
+      "_type": "request_group"
+    },
+    {
       "_id": "fld_0",
       "parentId": "wrk_0",
       "modified": 1694505600000,
       "created": 1694505600000,
-      "name": "Blog Posts API",
-      "description": "Endpoints para la API de posts del blog",
+      "name": "📝 Blog Posts",
+      "description": "Endpoints para la gestión de posts (REQUIEREN AUTENTICACIÓN)",
       "environment": {},
       "environmentPropertyOrder": null,
       "metaSortKey": -1694505600000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "fld_util",
+      "parentId": "wrk_0",
+      "modified": 1694510000000,
+      "created": 1694510000000,
+      "name": "🛠️ Utilities",
+      "description": "Endpoints utilitarios y de información",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1694510000000,
       "_type": "request_group"
     },
     {
@@ -168,8 +458,8 @@
       "parentId": null,
       "modified": 1694505600000,
       "created": 1694505600000,
-      "name": "Blog API - Hexagonal Architecture",
-      "description": "API REST para posts de blog usando Arquitectura Hexagonal",
+      "name": "Blog API - Hexagonal Architecture + Auth",
+      "description": "API REST para posts de blog usando Arquitectura Hexagonal con sistema de autenticación JWT",
       "scope": "collection",
       "_type": "workspace"
     },
@@ -180,11 +470,19 @@
       "created": 1694505600000,
       "name": "Base Environment",
       "data": {
-        "base_url": "http://localhost:3000"
+        "base_url": "http://localhost:3000",
+        "access_token": "",
+        "refresh_token": "",
+        "admin_email": "admin@blog.com",
+        "admin_password": "admin123456"
       },
       "dataPropertyOrder": {
         "&": [
-          "base_url"
+          "base_url",
+          "access_token",
+          "refresh_token",
+          "admin_email",
+          "admin_password"
         ]
       },
       "color": null,
@@ -199,11 +497,19 @@
       "created": 1694505600000,
       "name": "Development",
       "data": {
-        "base_url": "http://localhost:3000"
+        "base_url": "http://localhost:3000",
+        "access_token": "",
+        "refresh_token": "",
+        "admin_email": "admin@blog.com",
+        "admin_password": "admin123456"
       },
       "dataPropertyOrder": {
         "&": [
-          "base_url"
+          "base_url",
+          "access_token",
+          "refresh_token",
+          "admin_email",
+          "admin_password"
         ]
       },
       "color": "#7d69cb",
@@ -218,11 +524,19 @@
       "created": 1694505600000,
       "name": "Production",
       "data": {
-        "base_url": "https://your-api-domain.com"
+        "base_url": "https://your-api-domain.com",
+        "access_token": "",
+        "refresh_token": "",
+        "admin_email": "admin@yourdomain.com",
+        "admin_password": "your-secure-password"
       },
       "dataPropertyOrder": {
         "&": [
-          "base_url"
+          "base_url",
+          "access_token",
+          "refresh_token",
+          "admin_email",
+          "admin_password"
         ]
       },
       "color": "#d9534f",

@@ -2,14 +2,27 @@ import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { ApplicationServices } from '../../application/services';
 import { createPostsRoutes } from './routes/postsRoutes';
+import { createAuthRoutes } from '../../auth/routes';
+import { AuthMiddleware } from '../../auth/middleware';
+import { AuthController } from '../../auth/controllers';
 import { logger } from '../../utils/logger';
 
 /**
+ * Configuration for Express app dependencies
+ */
+export interface ExpressAppConfig {
+  applicationServices: ApplicationServices;
+  authController: AuthController;
+  authMiddleware: AuthMiddleware;
+}
+
+/**
  * Creates and configures the Express application
- * @param applicationServices - The application services instance
+ * @param config - Configuration with all required dependencies
  * @returns Configured Express app
  */
-export const createExpressApp = (applicationServices: ApplicationServices): Express => {
+export const createExpressApp = (config: ExpressAppConfig): Express => {
+  const { applicationServices, authController, authMiddleware } = config;
   const app = express();
 
   // Middleware
@@ -42,16 +55,26 @@ export const createExpressApp = (applicationServices: ApplicationServices): Expr
   });
 
   // API routes
-  app.use('/api/posts', createPostsRoutes(applicationServices));
+  app.use('/api/auth', createAuthRoutes(authController, authMiddleware));
+  app.use('/api/posts', createPostsRoutes(applicationServices, authMiddleware));
 
   // Root endpoint
   app.get('/', (req: Request, res: Response) => {
     res.status(200).json({
-      message: 'Blog Posts API',
+      message: 'Blog Posts API with Authentication',
       version: '1.0.0',
       endpoints: {
         health: '/health',
-        posts: '/api/posts',
+        auth: {
+          login: 'POST /api/auth/login',
+          refresh: 'POST /api/auth/refresh',
+          logout: 'POST /api/auth/logout',
+          me: 'GET /api/auth/me'
+        },
+        posts: {
+          create: 'POST /api/posts (requires CREATE_POSTS permission)',
+          getAll: 'GET /api/posts (requires READ_POSTS permission)'
+        },
       },
     });
   });

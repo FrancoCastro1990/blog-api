@@ -5,9 +5,16 @@ import { createApplicationServices } from './application/services';
 import { createExpressApp } from './infrastructure/web/expressApp';
 import { logger } from './utils/logger';
 
+// Auth dependencies
+import { MongooseUserRepository } from './auth/repositories';
+import { PasswordService, TokenService } from './auth/services';
+import { LoginUser, RefreshToken, ValidateToken } from './auth/usecases';
+import { AuthController } from './auth/controllers';
+import { AuthMiddleware } from './auth/middleware';
+
 /**
  * Application class responsible for bootstrapping the entire application
- * Following Hexagonal Architecture principles
+ * Following Hexagonal Architecture principles with authentication
  */
 export class App {
   private express: Express | null = null;
@@ -22,14 +29,32 @@ export class App {
       // 1. Connect to database (Infrastructure)
       await mongooseConnection.connect();
 
-      // 2. Create repository adapter (Infrastructure -> Domain port)
+      // 2. Create repository adapters (Infrastructure -> Domain ports)
       const postRepository = new MongoosePostRepository();
+      const userRepository = new MongooseUserRepository();
 
       // 3. Create application services (Application layer)
       const applicationServices = createApplicationServices(postRepository);
 
-      // 4. Create Express app with dependency injection (Infrastructure)
-      this.express = createExpressApp(applicationServices);
+      // 4. Create auth services (Auth layer)
+      const passwordService = new PasswordService();
+      const tokenService = new TokenService();
+
+      // 5. Create auth use cases
+      const loginUser = new LoginUser(userRepository, passwordService, tokenService);
+      const refreshToken = new RefreshToken(userRepository, tokenService);
+      const validateToken = new ValidateToken(userRepository, tokenService);
+
+      // 6. Create auth controller and middleware
+      const authController = new AuthController(loginUser, refreshToken);
+      const authMiddleware = new AuthMiddleware(validateToken);
+
+      // 7. Create Express app with dependency injection (Infrastructure)
+      this.express = createExpressApp({
+        applicationServices,
+        authController,
+        authMiddleware
+      });
 
       logger.info('Application initialized successfully');
       return this.express;
