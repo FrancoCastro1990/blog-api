@@ -1,5 +1,5 @@
-import { Post, CreatePostData } from '../../domain/entities/Post';
-import { PostRepository } from '../../domain/repositories/PostRepository';
+import { Post, CreatePostData } from '@domain/entities/Post';
+import { PostRepository } from '@domain/repositories/PostRepository';
 
 /**
  * CreatePost use case handles the business logic for creating new blog posts.

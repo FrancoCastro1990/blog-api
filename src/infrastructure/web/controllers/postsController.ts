@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { ZodError } from 'zod';
-import { ApplicationServices } from '../../../application/services';
-import { createPostSchema } from '../../../schemas/postSchema';
-import { logger } from '../../../utils/logger';
+import { ApplicationServices } from '@application/services';
+import { createPostSchema } from '@schemas/postSchema';
+import { logger } from '@utils/logger';
 
 /**
  * PostsController handles HTTP requests for post-related operations.

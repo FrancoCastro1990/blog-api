@@ -1,4 +1,4 @@
-import { Permission } from './User';
+import { Permission } from '@domain/entities/User';
 
 /**
  * JWT Token payload structure

@@ -1,6 +1,6 @@
-import { config } from './config';
-import { App } from './app';
-import { logger } from './utils/logger';
+import { config } from '@config/index';
+import { App } from '@/app';
+import { logger } from '@utils/logger';
 
 /**
  * Server entry point

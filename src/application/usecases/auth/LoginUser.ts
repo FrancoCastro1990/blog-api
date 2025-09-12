@@ -1,7 +1,7 @@
 import { User } from '../../../domain/entities/User';
-import { AuthResponse } from '../../../domain/entities/Token';
-import { UserRepository } from '../../../domain/repositories/UserRepository';
-import { PasswordService, TokenService } from '../../../domain/services';
+import { AuthResponse } from '@domain/entities/Token';
+import { UserRepository } from '@domain/repositories/UserRepository';
+import { PasswordService, TokenService } from '@domain/services';
 import { logger } from '../../../utils/logger';
 
 export interface LoginUserRequest {

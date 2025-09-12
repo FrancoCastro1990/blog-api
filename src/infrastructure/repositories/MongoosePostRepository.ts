@@ -1,6 +1,6 @@
-import { Post } from '../../domain/entities/Post';
-import { PostRepository } from '../../domain/repositories/PostRepository';
-import { MongoosePostModel, MongoosePostDocument } from '../database/mongoosePostModel';
+import { Post } from '@domain/entities/Post';
+import { PostRepository } from '@domain/repositories/PostRepository';
+import { MongoosePostModel, MongoosePostDocument } from '@infrastructure/database/mongoosePostModel';
 
 /**
  * MongoosePostRepository implements the PostRepository port using Mongoose ODM.

@@ -4,7 +4,8 @@ API REST para gestión de posts de blog implementada con **Arquitectura Hexagona
 
 ## 🎯 **Características Principales**
 
-- ✅ **Arquitectura Hexagonal** (Ports & Adapters) con separación clara de capas
+- ✅ **Arquitectura Hexagonal Pura** (Ports & Adapters) con separación total por capas
+- ✅ **Imports Dinámicos** con aliases `@domain`, `@application`, `@infrastructure` para código limpio
 - ✅ **Sistema de Autenticación JWT** completo con refresh tokens
 - ✅ **Autorización basada en permisos** granular (READ_POSTS, CREATE_POSTS, ADMIN)
 - ✅ **Refresh Token rotation** automático con limpieza de tokens expirados
@@ -36,25 +37,29 @@ API REST para gestión de posts de blog implementada con **Arquitectura Hexagona
 
 Este proyecto sigue fielmente los principios de **Arquitectura Hexagonal** con las siguientes capas claramente definidas:
 
-### **📦 Capas de la Arquitectura:**
+### **📦 Capas de la Arquitectura Hexagonal Pura:**
 
 ```
-🎯 Domain Layer (Núcleo)
-├── entities/        # User, Post, Token (lógica pura de negocio)
-└── repositories/    # Interfaces/ports abstractos
+🎯 Domain Layer (Núcleo de Negocio - Sin Dependencias Externas)
+├── entities/           # User, Post, Token (lógica pura de negocio)
+├── repositories/       # UserRepository, PostRepository (interfaces/ports)
+└── services/          # PasswordService, TokenService (servicios de dominio)
 
-📋 Application Layer (Orquestación)
-├── usecases/       # LoginUser, CreatePost, RefreshToken, etc.
-└── services/       # Factory de servicios de aplicación
+📋 Application Layer (Orquestación de Casos de Uso)
+├── usecases/          # CreatePost, GetAllPosts (casos de uso de posts)
+├── usecases/auth/     # LoginUser, RefreshToken, ValidateToken (casos de uso de autenticación)
+└── services/          # Factory de servicios de aplicación
 
-🔌 Infrastructure Layer (Adaptadores)
-├── database/       # MongoDB connection & models
-├── repositories/   # Implementaciones concretas (Mongoose)
-├── web/           # Express app, controllers, routes
-└── services/      # JWT, Password, logging services
+🔌 Infrastructure Layer (Adaptadores Externos)
+├── database/          # MongoDB connection & models (MongooseUserModel, mongoosePostModel)
+├── repositories/      # MongoosePostRepository, MongooseUserRepository (implementaciones)
+└── web/              # Express app, controllers, middleware, routes (adaptadores HTTP)
+    ├── controllers/   # AuthController, postsController
+    ├── middleware/    # AuthMiddleware  
+    └── routes/        # authRoutes, postsRoutes
 
-🔗 Ports (Contratos)
-└── Interfaces que conectan las capas sin dependencias directas
+🔗 Ports & Adapters Pattern
+└── Domain define interfaces (ports) que Infrastructure implementa (adapters)
 ```
 
 ### **📊 Beneficios Alcanzados:**
@@ -108,12 +113,15 @@ Functions:   62.35%
 Lines:       67.27%
 ```
 
-### **🏆 Módulos con Alta Cobertura:**
-- **auth/usecases**: 97.87% - LoginUser, RefreshToken, ValidateToken
+### **🏆 Módulos con Alta Cobertura por Capa Arquitectónica:**
 - **application/usecases**: 100% - CreatePost, GetAllPosts
-- **auth/controllers**: 100% - AuthController completo
+- **application/usecases/auth**: 97.87% - LoginUser, RefreshToken, ValidateToken
+- **domain/services**: 95.74% - PasswordService, TokenService  
+- **infrastructure/web/controllers**: 97.89% - AuthController, postsController
+- **infrastructure/web/routes**: 100% - authRoutes, postsRoutes
+- **infrastructure/web**: 100% - expressApp
 - **schemas**: 100% - Validación Zod
-- **auth/services**: 95.74% - PasswordService, TokenService
+- **utils**: 86.66% - Logger
 
 ### **📋 Suite de Tests Implementada:**
 - **Unit Tests**: 188 tests unitarios comprehensivos
@@ -164,13 +172,13 @@ npm run dev
 - **Testing**: Jest
 - **Containerization**: Docker & Docker Compose
 
-## 📁 **Estructura del Proyecto - Arquitectura Hexagonal**
+## 📁 **Estructura del Proyecto - Arquitectura Hexagonal Pura**
 
 ```
 blog-api/
 ├── 📦 package.json              # Dependencies & scripts
 ├── 🐳 docker-compose.yml        # MongoDB setup
-├── ⚙️  tsconfig.json            # TypeScript configuration
+├── ⚙️  tsconfig.json            # TypeScript configuration (con imports dinámicos @domain, @application, @infrastructure)
 ├── 📨 insomnia-collection.json  # REST client collection (ACTUALIZADO)
 ├── 📝 README.md                # Documentación completa
 ├── 🔧 scripts/
@@ -181,80 +189,88 @@ blog-api/
     ├── config/
     │   └── index.ts            # ⚙️ Configuration management
     │
-    ├── 🔐 auth/                # Authentication module (JWT)
-    │   ├── entities/
-    │   │   ├── User.ts         # User entity + Permission enum
-    │   │   └── Token.ts        # JWT token interfaces
-    │   ├── repositories/
-    │   │   ├── UserRepository.ts           # User repo interface (port)
-    │   │   └── MongooseUserRepository.ts   # MongoDB implementation
-    │   ├── services/
-    │   │   ├── PasswordService.ts  # Bcrypt hashing/verification
-    │   │   └── TokenService.ts     # JWT generation/validation
-    │   ├── usecases/
-    │   │   ├── LoginUser.ts       # 🎯 100% test coverage
-    │   │   ├── RefreshToken.ts    # 🎯 100% test coverage  
-    │   │   └── ValidateToken.ts   # 🎯 93.93% test coverage
-    │   ├── middleware/
-    │   │   └── authMiddleware.ts  # JWT authentication middleware
-    │   ├── controllers/
-    │   │   └── AuthController.ts  # 🎯 100% test coverage
-    │   └── routes/
-    │       └── authRoutes.ts      # Authentication endpoints
+    ├── 🎯 domain/              # DOMAIN LAYER - Core Business Logic
+    │   ├── entities/           # Business entities (framework-independent)
+    │   │   ├── User.ts         # 🎯 User entity + Permission enum
+    │   │   ├── Post.ts         # 🎯 Post entity (pure domain)
+    │   │   └── Token.ts        # 🎯 JWT token interfaces & types
+    │   ├── repositories/       # Repository interfaces (ports)
+    │   │   ├── UserRepository.ts    # 🎯 User repo interface (port)
+    │   │   └── PostRepository.ts    # 🎯 Post repo interface (port)
+    │   └── services/           # Domain services (business logic)
+    │       ├── PasswordService.ts   # 🎯 95.74% - Bcrypt hashing/verification
+    │       └── TokenService.ts      # 🎯 100% - JWT generation/validation
     │
-    ├── 🎯 domain/              # Domain layer (business logic core)
-    │   ├── entities/
-    │   │   └── Post.ts         # Post entity (pure domain)
-    │   └── repositories/
-    │       └── PostRepository.ts # Repository interface (port)
-    │
-    ├── 📋 application/         # Application layer (use cases)
-    │   ├── usecases/
+    ├── 📋 application/         # APPLICATION LAYER - Use Cases & Orchestration
+    │   ├── usecases/          # Application use cases
     │   │   ├── CreatePost.ts   # 🎯 100% test coverage
-    │   │   └── GetAllPosts.ts  # 🎯 100% test coverage
+    │   │   ├── GetAllPosts.ts  # 🎯 100% test coverage
+    │   │   └── auth/          # Authentication use cases
+    │   │       ├── LoginUser.ts      # 🎯 100% test coverage
+    │   │       ├── RefreshToken.ts   # 🎯 100% test coverage  
+    │   │       └── ValidateToken.ts  # 🎯 97.87% test coverage
     │   └── services/
     │       └── index.ts        # Application services factory
     │
-    ├── 🔌 infrastructure/      # Infrastructure layer (adapters)
-    │   ├── database/
-    │   │   ├── mongooseConnection.ts    # MongoDB connection
-    │   │   ├── mongoosePostModel.ts     # Post schema
-    │   │   └── mongooseUserModel.ts     # User schema
-    │   ├── repositories/
-    │   │   └── MongoosePostRepository.ts # Post repo implementation
-    │   └── web/
-    │       ├── expressApp.ts           # Express configuration
-    │       ├── controllers/
-    │       │   └── postsController.ts  # Posts HTTP controller
-    │       └── routes/
-    │           └── postsRoutes.ts      # Posts endpoints
+    ├── 🔌 infrastructure/      # INFRASTRUCTURE LAYER - External Adapters
+    │   ├── database/          # Database adapters
+    │   │   ├── mongooseConnection.ts     # MongoDB connection
+    │   │   ├── mongoosePostModel.ts      # Post MongoDB schema
+    │   │   └── MongooseUserModel.ts      # User MongoDB schema
+    │   ├── repositories/      # Repository implementations (adapters)
+    │   │   ├── MongoosePostRepository.ts # 🎯 87.5% - Post repo implementation
+    │   │   └── MongooseUserRepository.ts # User repo implementation
+    │   └── web/              # Web layer (HTTP adapters)
+    │       ├── expressApp.ts          # 🎯 100% - Express configuration
+    │       ├── controllers/           # HTTP controllers
+    │       │   ├── AuthController.ts  # 🎯 100% test coverage
+    │       │   └── postsController.ts # 🎯 97.89% - Posts HTTP controller
+    │       ├── middleware/           # HTTP middleware
+    │       │   └── AuthMiddleware.ts # JWT authentication middleware
+    │       └── routes/              # Route definitions
+    │           ├── authRoutes.ts    # 🎯 100% - Authentication endpoints
+    │           └── postsRoutes.ts   # 🎯 100% - Posts endpoints
     │
     ├── 📊 schemas/             # Validation schemas (Zod)
     │   └── postSchema.ts       # 🎯 100% test coverage
     │
-    ├── 🛠️ utils/               # Utilities
-    │   └── logger.ts          # Structured logging
+    ├── 🛠️ utils/               # Shared utilities
+    │   └── logger.ts          # 🎯 86.66% - Structured logging
     │
-    └── 🧪 tests/              # Comprehensive test suite
-        ├── unit/              # Unit tests (188 tests ✅)
+    └── 🧪 tests/              # Comprehensive test suite (188 tests ✅)
+        ├── setup.ts           # Test configuration
+        ├── simple.test.ts     # Integration smoke tests
+        ├── unit/              # Unit tests by architectural layer
         │   ├── auth/         # Authentication module tests
-        │   │   ├── services/  # PasswordService, TokenService
-        │   │   ├── usecases/  # Login, Refresh, Validate
-        │   │   └── controllers/ # AuthController
-        │   ├── repositories/  # Repository tests
-        │   ├── usecases/     # Domain use cases tests
+        │   │   ├── controllers/ # AuthController tests
+        │   │   ├── services/    # PasswordService, TokenService tests
+        │   │   └── usecases/    # Login, Refresh, Validate tests
         │   ├── controllers/   # HTTP controllers tests
-        │   ├── schemas/      # Zod validation tests
-        │   └── utils/        # Logger and utilities tests
-        └── simple.test.ts    # Integration smoke tests
+        │   ├── infrastructure/ # Infrastructure layer tests
+        │   │   ├── repositories/ # Repository implementation tests
+        │   │   └── web/        # Express app tests
+        │   ├── repositories/ # Repository tests
+        │   ├── schemas/     # Zod validation tests
+        │   ├── usecases/    # Application use cases tests
+        │   └── utils/       # Utilities tests
+        └── mocks/           # Test mocks and fixtures
+            └── authMocks.ts # Authentication test mocks
 ```
 
-### **🎨 Código coloreado por responsabilidad:**
-- 🎯 **Domain** - Lógica de negocio pura
-- 📋 **Application** - Casos de uso y orquestación  
-- 🔌 **Infrastructure** - Adaptadores y frameworks externos
-- 🔐 **Auth** - Autenticación y autorización JWT
-- 🧪 **Tests** - Suite de testing comprehensiva
+### **🎨 Arquitectura Hexagonal Pura Implementada:**
+- 🎯 **Domain Layer** - Núcleo de lógica de negocio (independiente de frameworks)
+- 📋 **Application Layer** - Casos de uso y orquestación de la lógica de aplicación  
+- 🔌 **Infrastructure Layer** - Adaptadores externos (Base de datos, Web, etc.)
+- 🧪 **Tests** - Suite de testing organizada por capas arquitectónicas
+- 📊 **Schemas** - Validación de datos con Zod
+- �️ **Utils** - Utilidades compartidas
+
+### **✨ Características de la Arquitectura:**
+- ✅ **Imports Dinámicos**: `@domain`, `@application`, `@infrastructure` para código limpio
+- ✅ **Separación Pura**: Sin carpetas por features, solo por capas arquitectónicas
+- ✅ **Inversión de Dependencias**: Infrastructure implementa interfaces de Domain
+- ✅ **Testabilidad**: Cada capa testeada independientemente
+- ✅ **188 Tests** ejecutándose correctamente con la nueva estructura
 
 ## 🏃‍♂️ Quick Start
 
@@ -470,9 +486,9 @@ npm test -- tests/unit/auth/services/
 - **Password:** `admin123456`
 - **Permisos:** `READ_POSTS`, `CREATE_POSTS`, `ADMIN`
 
-### **Modelos de Datos**
+### **Modelos de Datos (Domain Entities)**
 
-**User:**
+**User** (src/domain/entities/User.ts):
 ```typescript
 {
   id: string;
@@ -485,7 +501,7 @@ npm test -- tests/unit/auth/services/
 }
 ```
 
-**Post:**
+**Post** (src/domain/entities/Post.ts):
 ```typescript
 {
   id: string;
@@ -494,6 +510,19 @@ npm test -- tests/unit/auth/services/
   author?: string;
   createdAt: Date;
   updatedAt: Date;
+}
+```
+
+**Token** (src/domain/entities/Token.ts):
+```typescript
+{
+  // JWT Payload interface
+  TokenPayload: {
+    userId: string;
+    email: string;
+    permissions: Permission[];
+    tokenType: TokenType;
+  }
 }
 ```
 

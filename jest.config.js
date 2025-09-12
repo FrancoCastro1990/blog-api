@@ -11,6 +11,17 @@ module.exports = {
   // Source directory
   roots: ['<rootDir>/src', '<rootDir>/tests'],
   
+  // Module name mapping for path aliases
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+    '^@domain/(.*)$': '<rootDir>/src/domain/$1',
+    '^@application/(.*)$': '<rootDir>/src/application/$1',
+    '^@infrastructure/(.*)$': '<rootDir>/src/infrastructure/$1',
+    '^@schemas/(.*)$': '<rootDir>/src/schemas/$1',
+    '^@utils/(.*)$': '<rootDir>/src/utils/$1',
+    '^@config/(.*)$': '<rootDir>/src/config/$1'
+  },
+  
   // Test match patterns
   testMatch: [
     '**/tests/**/*.test.ts',

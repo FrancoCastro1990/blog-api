@@ -1,16 +1,16 @@
 import { Express } from 'express';
-import { mongooseConnection } from './infrastructure/database/mongooseConnection';
-import { MongoosePostRepository } from './infrastructure/repositories/MongoosePostRepository';
-import { createApplicationServices } from './application/services';
-import { createExpressApp } from './infrastructure/web/expressApp';
-import { logger } from './utils/logger';
+import { mongooseConnection } from '@infrastructure/database/mongooseConnection';
+import { MongoosePostRepository } from '@infrastructure/repositories/MongoosePostRepository';
+import { createApplicationServices } from '@application/services';
+import { createExpressApp } from '@infrastructure/web/expressApp';
+import { logger } from '@utils/logger';
 
 // Auth dependencies
-import { MongooseUserRepository } from './infrastructure/repositories/MongooseUserRepository';
-import { PasswordService, TokenService } from './domain/services';
-import { LoginUser, RefreshToken, ValidateToken } from './application/usecases/auth';
-import { AuthController } from './infrastructure/web/controllers';
-import { AuthMiddleware } from './infrastructure/web/middleware';
+import { MongooseUserRepository } from '@infrastructure/repositories/MongooseUserRepository';
+import { PasswordService, TokenService } from '@domain/services';
+import { LoginUser, RefreshToken, ValidateToken } from '@application/usecases/auth';
+import { AuthController } from '@infrastructure/web/controllers';
+import { AuthMiddleware } from '@infrastructure/web/middleware';
 
 /**
  * Application class responsible for bootstrapping the entire application

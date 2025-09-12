@@ -1,5 +1,5 @@
-import { Post } from '../../domain/entities/Post';
-import { PostRepository } from '../../domain/repositories/PostRepository';
+import { Post } from '@domain/entities/Post';
+import { PostRepository } from '@domain/repositories/PostRepository';
 
 /**
  * GetAllPosts use case handles the business logic for retrieving all blog posts.

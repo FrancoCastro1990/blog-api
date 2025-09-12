@@ -1,4 +1,4 @@
-import { Post } from "../entities/Post";
+import { Post } from "@domain/entities/Post";
 
 /**
  * PostRepository port (interface) defines the contract for data persistence.

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { LoginUser, RefreshToken } from '../../../application/usecases/auth';
-import { logger } from '../../../utils/logger';
+import { LoginUser, RefreshToken } from '@application/usecases/auth';
+import { logger } from '@utils/logger';
 
 export class AuthController {
   constructor(

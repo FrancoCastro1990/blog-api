@@ -1,6 +1,6 @@
-import { PostRepository } from '../../domain/repositories/PostRepository';
-import { CreatePost } from '../usecases/CreatePost';
-import { GetAllPosts } from '../usecases/GetAllPosts';
+import { PostRepository } from '@domain/repositories/PostRepository';
+import { CreatePost } from '@application/usecases/CreatePost';
+import { GetAllPosts } from '@application/usecases/GetAllPosts';
 
 /**
  * Application services factory

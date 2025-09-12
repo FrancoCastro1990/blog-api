@@ -1,5 +1,5 @@
-import mongoose, { Schema, Document, Model } from 'mongoose';
-import { User, Permission, RefreshTokenData } from '../../domain/entities/User';
+import mongoose, { Schema, Document, Types, Model } from 'mongoose';
+import { User, Permission, RefreshTokenData } from '@domain/entities/User';
 
 // Mongoose document interface
 export interface UserDocument extends Document {

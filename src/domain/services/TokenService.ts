@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
-import { User, Permission } from '../entities/User';
-import { TokenPayload, TokenType } from '../entities/Token';
-import { config } from '../../config';
+import { User, Permission } from '@domain/entities/User';
+import { TokenPayload, TokenType } from '@domain/entities/Token';
+import { config } from '@config/index';
 
 export class TokenService {
   private readonly secret: string;

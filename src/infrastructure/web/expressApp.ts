@@ -1,11 +1,11 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
-import { ApplicationServices } from '../../application/services';
-import { createPostsRoutes } from './routes/postsRoutes';
-import { createAuthRoutes } from './routes';
-import { AuthMiddleware } from './middleware';
-import { AuthController } from './controllers';
-import { logger } from '../../utils/logger';
+import { ApplicationServices } from '@application/services';
+import { createPostsRoutes } from '@infrastructure/web/routes/postsRoutes';
+import { createAuthRoutes } from '@infrastructure/web/routes';
+import { AuthMiddleware } from '@infrastructure/web/middleware';
+import { AuthController } from '@infrastructure/web/controllers';
+import { logger } from '@utils/logger';
 
 /**
  * Configuration for Express app dependencies
