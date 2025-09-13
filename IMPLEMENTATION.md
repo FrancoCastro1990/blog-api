@@ -138,8 +138,7 @@ Authorization: Bearer {access_token}
 
 ### **1. Get All Posts**
 - **Endpoint**: `GET /api/posts`
-- **Auth Required**: ✅ Bearer Token
-- **Permission Required**: `READ_POSTS`
+- **Auth Required**: ❌ Público
 
 **Response (200):**
 ```json
@@ -155,18 +154,7 @@ Authorization: Bearer {access_token}
 ]
 ```
 
-**Error (403):**
-```json
-{
-  "success": false,
-  "message": "Insufficient permissions",
-  "error": "FORBIDDEN",
-  "details": {
-    "required": ["READ_POSTS"],
-    "provided": []
-  }
-}
-```
+---
 
 ### **2. Create Post**
 - **Endpoint**: `POST /api/posts`
@@ -348,9 +336,9 @@ POST /api/auth/login
 
 ### **2. Cargar Posts**
 ```
-GET /api/posts (con Bearer token)
+GET /api/posts (acceso público)
 → Mostrar lista de posts
-→ Manejar errores de permisos
+→ Sin autenticación requerida
 ```
 
 ### **3. Crear Post**
