@@ -30,10 +30,9 @@ export const createPostsRoutes = (
   /**
    * @route   GET /api/posts
    * @desc    Get all posts
-   * @access  Protected - Requires READ_POSTS permission
+   * @access  Public - No authentication required
    */
   router.get('/', 
-    authMiddleware.requireReadAccess(),
     postsController.getAllPosts
   );
 

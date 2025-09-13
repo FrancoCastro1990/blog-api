@@ -73,7 +73,7 @@ export const createExpressApp = (config: ExpressAppConfig): Express => {
         },
         posts: {
           create: 'POST /api/posts (requires CREATE_POSTS permission)',
-          getAll: 'GET /api/posts (requires READ_POSTS permission)'
+          getAll: 'GET /api/posts (public access)'
         },
       },
     });

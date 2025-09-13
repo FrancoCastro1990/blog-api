@@ -21,7 +21,7 @@ API REST para gestión de posts de blog implementada con **Arquitectura Hexagona
 
 | Permiso | Descripción | Endpoints Autorizados | Usuario por Defecto |
 |---------|-------------|----------------------|-------------------|
-| `READ_POSTS` | Lectura de posts | `GET /api/posts` | ✅ Admin |
+| `READ_POSTS` | Lectura de posts (solo para gestión) | `GET /api/auth/me` | ✅ Admin |
 | `CREATE_POSTS` | Crear/editar posts | `POST /api/posts` | ✅ Admin |
 | `ADMIN` | Acceso administrativo completo | Todos los endpoints + gestión usuarios | ✅ Admin |
 
@@ -337,7 +337,7 @@ http://localhost:3000
 
 | Método | Endpoint | Descripción | Permiso Requerido | Response |
 |--------|----------|-------------|-------------------|----------|
-| `GET` | `/api/posts` | Obtener todos los posts | `READ_POSTS` | Array de posts |
+| `GET` | `/api/posts` | Obtener todos los posts | ❌ Público | Array de posts |
 | `POST` | `/api/posts` | Crear nuevo post | `CREATE_POSTS` | Post creado |
 
 ### **🛠️ Utility Endpoints**
@@ -378,10 +378,16 @@ curl -X POST http://localhost:3000/api/auth/login \
 }
 ```
 
-### **🔄 2. Usar Access Token**
+### **🔄 2. Usar Access Token (para crear posts)**
 ```bash
-curl -X GET http://localhost:3000/api/posts \
-  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+curl -X POST http://localhost:3000/api/posts \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Mi nuevo post",
+    "content": "Contenido aquí",
+    "author": "Admin User"
+  }'
 ```
 
 ### **🔃 3. Refresh Tokens (cuando expiran)**
@@ -431,8 +437,7 @@ curl -X POST http://localhost:3000/api/posts \
 
 ### **Obtener Posts**
 ```bash
-curl -X GET http://localhost:3000/api/posts \
-  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+curl -X GET http://localhost:3000/api/posts
 ```
 
 **Response (200):**
