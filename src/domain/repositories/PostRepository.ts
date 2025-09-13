@@ -25,4 +25,19 @@ export interface PostRepository {
    * @returns Promise resolving to the post if found, null otherwise
    */
   findById(id: string): Promise<Post | null>;
+
+  /**
+   * Updates an existing post in the repository
+   * @param id - The unique identifier of the post to update
+   * @param updateData - Partial post data with fields to update
+   * @returns Promise resolving to the updated post if found, null otherwise
+   */
+  update(id: string, updateData: Partial<Omit<Post, 'id' | 'createdAt'>>): Promise<Post | null>;
+
+  /**
+   * Deletes a post from the repository
+   * @param id - The unique identifier of the post to delete
+   * @returns Promise resolving to true if the post was deleted, false if not found
+   */
+  delete(id: string): Promise<boolean>;
 }

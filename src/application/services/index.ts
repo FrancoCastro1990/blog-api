@@ -1,6 +1,9 @@
 import { PostRepository } from '@domain/repositories/PostRepository';
 import { CreatePost } from '@application/usecases/CreatePost';
 import { GetAllPosts } from '@application/usecases/GetAllPosts';
+import { GetPostById } from '@application/usecases/GetPostById';
+import { UpdatePost } from '@application/usecases/UpdatePost';
+import { DeletePost } from '@application/usecases/DeletePost';
 
 /**
  * Application services factory
@@ -21,6 +24,27 @@ export class ApplicationServices {
    */
   getAllPosts(): GetAllPosts {
     return new GetAllPosts(this.postRepository);
+  }
+
+  /**
+   * Creates and returns the GetPostById use case
+   */
+  getPostById(): GetPostById {
+    return new GetPostById(this.postRepository);
+  }
+
+  /**
+   * Creates and returns the UpdatePost use case
+   */
+  updatePost(): UpdatePost {
+    return new UpdatePost(this.postRepository);
+  }
+
+  /**
+   * Creates and returns the DeletePost use case
+   */
+  deletePost(): DeletePost {
+    return new DeletePost(this.postRepository);
   }
 }
 

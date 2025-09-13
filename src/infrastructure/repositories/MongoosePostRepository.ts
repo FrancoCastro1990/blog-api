@@ -62,6 +62,52 @@ export class MongoosePostRepository implements PostRepository {
   }
 
   /**
+   * Updates an existing post in MongoDB
+   * @param id - The unique identifier of the post to update
+   * @param updateData - Partial post data with fields to update
+   * @returns Promise resolving to the updated post if found, null otherwise
+   */
+  async update(id: string, updateData: Partial<Omit<Post, 'id' | 'createdAt'>>): Promise<Post | null> {
+    try {
+      // Add updatedAt timestamp to the update data
+      const dataWithTimestamp = {
+        ...updateData,
+        updatedAt: new Date().toISOString(),
+      };
+
+      const updatedPost = await MongoosePostModel.findByIdAndUpdate(
+        id,
+        dataWithTimestamp,
+        { new: true, runValidators: true }
+      ).exec();
+
+      return updatedPost ? this.mapDocumentToEntity(updatedPost) : null;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Failed to update post: ${error.message}`);
+      }
+      throw new Error('Failed to update post: Unknown error');
+    }
+  }
+
+  /**
+   * Deletes a post from MongoDB
+   * @param id - The unique identifier of the post to delete
+   * @returns Promise resolving to true if the post was deleted, false if not found
+   */
+  async delete(id: string): Promise<boolean> {
+    try {
+      const result = await MongoosePostModel.findByIdAndDelete(id).exec();
+      return result !== null;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Failed to delete post: ${error.message}`);
+      }
+      throw new Error('Failed to delete post: Unknown error');
+    }
+  }
+
+  /**
    * Maps a Mongoose document to a domain entity
    * @param document - The Mongoose document
    * @returns The domain Post entity

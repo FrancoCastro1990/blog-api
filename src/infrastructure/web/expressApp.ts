@@ -25,6 +25,12 @@ export const createExpressApp = (config: ExpressAppConfig): Express => {
   const { applicationServices, authController, authMiddleware } = config;
   const app = express();
 
+  // DEBUG: Middleware para ver si el request entra al pipeline
+  app.use((req, res, next) => {
+    console.log('DEBUG: Request received:', req.method, req.url);
+    next();
+  });
+
   // Middleware
   app.use(cors({
     origin: process.env.NODE_ENV === 'production' 

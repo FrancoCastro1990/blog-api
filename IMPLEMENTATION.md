@@ -199,6 +199,131 @@ Authorization: Bearer {access_token}
 
 ---
 
+### **3. Get Post by ID**
+- **Endpoint**: `GET /api/posts/:id`
+- **Auth Required**: ❌ Público
+
+**Request URL:**
+```
+GET /api/posts/64f5a5b8c12f4a001f8b456a
+```
+
+**Response (200):**
+```json
+{
+  "id": "64f5a5b8c12f4a001f8b456a",
+  "title": "Mi primer post",
+  "content": "Contenido del post aquí",
+  "author": "Admin User",
+  "createdAt": "2025-09-12T01:00:00.000Z",
+  "updatedAt": null
+}
+```
+
+**Error (404):**
+```json
+{
+  "error": "Post not found"
+}
+```
+
+**Error (400 - Invalid ID):**
+```json
+{
+  "error": "Validation failed",
+  "details": [
+    {
+      "field": "id",
+      "message": "Invalid MongoDB ObjectId format"
+    }
+  ]
+}
+```
+
+---
+
+### **4. Update Post**
+- **Endpoint**: `PUT /api/posts/:id`
+- **Auth Required**: ✅ Bearer Token
+- **Permission Required**: `UPDATE_POSTS`
+
+**Request:**
+```json
+{
+  "title": "Título actualizado",
+  "content": "Contenido actualizado del post",
+  "author": "Autor actualizado"
+}
+```
+
+**Nota**: Todos los campos son opcionales. Puedes enviar solo los campos que deseas actualizar.
+
+**Response (200):**
+```json
+{
+  "id": "64f5a5b8c12f4a001f8b456a",
+  "title": "Título actualizado",
+  "content": "Contenido actualizado del post",
+  "author": "Autor actualizado",
+  "createdAt": "2025-09-12T01:00:00.000Z",
+  "updatedAt": "2025-09-12T01:30:00.000Z"
+}
+```
+
+**Error (404):**
+```json
+{
+  "error": "Post not found"
+}
+```
+
+**Error (400 - No fields provided):**
+```json
+{
+  "error": "Validation failed",
+  "details": [
+    {
+      "field": "root",
+      "message": "At least one field must be provided for update"
+    }
+  ]
+}
+```
+
+---
+
+### **5. Delete Post**
+- **Endpoint**: `DELETE /api/posts/:id`
+- **Auth Required**: ✅ Bearer Token
+- **Permission Required**: `DELETE_POSTS`
+
+**Request URL:**
+```
+DELETE /api/posts/64f5a5b8c12f4a001f8b456a
+```
+
+**Response (204):**
+```
+No Content - Post eliminado exitosamente
+```
+
+**Error (404):**
+```json
+{
+  "error": "Post not found"
+}
+```
+
+**Error (403):**
+```json
+{
+  "error": "Authentication failed",
+  "message": "Invalid token"
+}
+```
+
+---
+
 ## 🛠️ **Endpoints Utilitarios**
 
 ### **1. Health Check**
@@ -239,12 +364,14 @@ Authorization: Bearer {access_token}
 ### **Permisos Disponibles**
 - `READ_POSTS`: Leer posts
 - `CREATE_POSTS`: Crear posts
+- `UPDATE_POSTS`: Actualizar posts existentes
+- `DELETE_POSTS`: Eliminar posts
 - `ADMIN`: Acceso administrativo completo
 
 ### **Usuario Administrador por Defecto**
 - **Email**: `admin@blog.com`
 - **Password**: `admin123456`
-- **Permisos**: `["READ_POSTS", "CREATE_POSTS", "ADMIN"]`
+- **Permisos**: `["READ_POSTS", "CREATE_POSTS", "UPDATE_POSTS", "DELETE_POSTS", "ADMIN"]`
 
 ---
 
@@ -349,6 +476,32 @@ POST /api/posts (con Bearer token)
 → Manejar errores de validación
 ```
 
+### **4. Actualizar Post**
+```
+GET /api/posts/:id (cargar datos actuales)
+→ PUT /api/posts/:id (con Bearer token)
+→ Validar permisos UPDATE_POSTS
+→ Actualizar solo campos modificados
+→ Mostrar mensaje de éxito
+```
+
+### **5. Eliminar Post**
+```
+DELETE /api/posts/:id (con Bearer token)
+→ Validar permisos DELETE_POSTS
+→ Confirmar eliminación
+→ Actualizar lista de posts
+→ Manejar caso de post no encontrado
+```
+
+### **6. Ver Post Individual**
+```
+GET /api/posts/:id (acceso público)
+→ Mostrar post completo
+→ Manejar caso de post no encontrado
+→ Sin autenticación requerida
+```
+
 ### **4. Logout**
 ```
 POST /api/auth/logout (con Bearer token y refresh token)
@@ -382,6 +535,84 @@ const hasPermission = (permission) => {
   
   const user = JSON.parse(userData);
   return user.permissions.includes(permission);
+};
+
+// Funciones específicas para posts
+const canCreatePosts = () => hasPermission('CREATE_POSTS');
+const canUpdatePosts = () => hasPermission('UPDATE_POSTS');
+const canDeletePosts = () => hasPermission('DELETE_POSTS');
+const isAdmin = () => hasPermission('ADMIN');
+```
+
+### **CRUD Operations Helper**
+```javascript
+const PostAPI = {
+  // Obtener todos los posts
+  async getAll() {
+    const response = await fetch('/api/posts');
+    return response.json();
+  },
+
+  // Obtener un post específico
+  async getById(id) {
+    const response = await fetch(`/api/posts/${id}`);
+    if (!response.ok) {
+      throw new Error(response.status === 404 ? 'Post no encontrado' : 'Error al cargar post');
+    }
+    return response.json();
+  },
+
+  // Crear nuevo post
+  async create(postData) {
+    const token = localStorage.getItem('access_token');
+    const response = await fetch('/api/posts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(postData)
+    });
+    
+    if (!response.ok) {
+      throw new Error('Error al crear post');
+    }
+    return response.json();
+  },
+
+  // Actualizar post existente
+  async update(id, postData) {
+    const token = localStorage.getItem('access_token');
+    const response = await fetch(`/api/posts/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(postData)
+    });
+    
+    if (!response.ok) {
+      throw new Error(response.status === 404 ? 'Post no encontrado' : 'Error al actualizar post');
+    }
+    return response.json();
+  },
+
+  // Eliminar post
+  async delete(id) {
+    const token = localStorage.getItem('access_token');
+    const response = await fetch(`/api/posts/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(response.status === 404 ? 'Post no encontrado' : 'Error al eliminar post');
+    }
+    return true; // 204 No Content
+  }
 };
 ```
 
@@ -427,4 +658,16 @@ const handleApiError = (error) => {
 - [ ] Proteger rutas según permisos requeridos
 - [ ] Testear flujo completo: login → uso → refresh → logout
 
-**¡Listo para integrar! 🚀**
+### **CRUD Posts Checklist**
+- [ ] Implementar listado de posts (`GET /api/posts`)
+- [ ] Implementar vista individual de post (`GET /api/posts/:id`)
+- [ ] Implementar formulario de creación (`POST /api/posts`) con validación de permisos
+- [ ] Implementar formulario de edición (`PUT /api/posts/:id`) con validación de permisos
+- [ ] Implementar eliminación (`DELETE /api/posts/:id`) con confirmación y validación de permisos
+- [ ] Manejar estados de carga, error y éxito para cada operación
+- [ ] Validar campos requeridos en frontend antes de enviar
+- [ ] Implementar navegación entre lista ↔ detalle ↔ edición
+- [ ] Mostrar/ocultar botones de acciones según permisos del usuario
+- [ ] Testear todos los flujos con diferentes niveles de permisos
+
+**¡Listo para integrar CRUD completo! 🚀**

@@ -22,7 +22,9 @@ API REST para gestión de posts de blog implementada con **Arquitectura Hexagona
 | Permiso | Descripción | Endpoints Autorizados | Usuario por Defecto |
 |---------|-------------|----------------------|-------------------|
 | `READ_POSTS` | Lectura de posts (solo para gestión) | `GET /api/auth/me` | ✅ Admin |
-| `CREATE_POSTS` | Crear/editar posts | `POST /api/posts` | ✅ Admin |
+| `CREATE_POSTS` | Crear posts | `POST /api/posts` | ✅ Admin |
+| `UPDATE_POSTS` | Actualizar posts existentes | `PUT /api/posts/:id` | ✅ Admin |
+| `DELETE_POSTS` | Eliminar posts | `DELETE /api/posts/:id` | ✅ Admin |
 | `ADMIN` | Acceso administrativo completo | Todos los endpoints + gestión usuarios | ✅ Admin |
 
 ### **Funcionalidades de Seguridad:**
@@ -338,7 +340,10 @@ http://localhost:3000
 | Método | Endpoint | Descripción | Permiso Requerido | Response |
 |--------|----------|-------------|-------------------|----------|
 | `GET` | `/api/posts` | Obtener todos los posts | ❌ Público | Array de posts |
+| `GET` | `/api/posts/:id` | Obtener un post específico | ❌ Público | Post único |
 | `POST` | `/api/posts` | Crear nuevo post | `CREATE_POSTS` | Post creado |
+| `PUT` | `/api/posts/:id` | Actualizar post existente | `UPDATE_POSTS` | Post actualizado |
+| `DELETE` | `/api/posts/:id` | Eliminar post | `DELETE_POSTS` | Sin contenido (204) |
 
 ### **🛠️ Utility Endpoints**
 
@@ -452,6 +457,68 @@ curl -X GET http://localhost:3000/api/posts
     "updatedAt": null
   }
 ]
+```
+
+### **🔍 Obtener Post por ID**
+```bash
+curl -X GET http://localhost:3000/api/posts/64f5a5b8c12f4a001f8b456a
+```
+
+**Response (200):**
+```json
+{
+  "id": "64f5a5b8c12f4a001f8b456a",
+  "title": "Mi primer post",
+  "content": "Contenido del post aquí",
+  "author": "Admin User",
+  "createdAt": "2025-09-12T01:00:00.000Z",
+  "updatedAt": null
+}
+```
+
+**Response (404) - Post no encontrado:**
+```json
+{
+  "error": "Post not found"
+}
+```
+
+### **✏️ Actualizar Post Existente**
+```bash
+curl -X PUT http://localhost:3000/api/posts/64f5a5b8c12f4a001f8b456a \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -d '{
+    "title": "Título actualizado",
+    "content": "Contenido actualizado del post"
+  }'
+```
+
+**Response (200):**
+```json
+{
+  "id": "64f5a5b8c12f4a001f8b456a",
+  "title": "Título actualizado",
+  "content": "Contenido actualizado del post",
+  "author": "Admin User",
+  "createdAt": "2025-09-12T01:00:00.000Z",
+  "updatedAt": "2025-09-12T01:30:00.000Z"
+}
+```
+
+### **🗑️ Eliminar Post**
+```bash
+curl -X DELETE http://localhost:3000/api/posts/64f5a5b8c12f4a001f8b456a \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+**Response (204) - Sin contenido - Post eliminado exitosamente**
+
+**Response (404) - Post no encontrado:**
+```json
+{
+  "error": "Post not found"
+}
 ```
 
 ### **Health Check**

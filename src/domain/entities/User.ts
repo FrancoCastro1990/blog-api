@@ -44,6 +44,8 @@ export interface User {
 export enum Permission {
   READ_POSTS = 'read:posts',
   CREATE_POSTS = 'create:posts',
+  UPDATE_POSTS = 'update:posts',
+  DELETE_POSTS = 'delete:posts',
   ADMIN = 'admin'
 }
 

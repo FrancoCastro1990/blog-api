@@ -150,6 +150,28 @@ export class AuthMiddleware {
   }
 
   /**
+   * Require token with UPDATE_POSTS permission
+   */
+  requireUpdateAccess() {
+    return createAuthMiddleware({
+      validateToken: this.validateToken,
+      requiredPermission: Permission.UPDATE_POSTS,
+      requiredTokenType: TokenType.ACCESS
+    });
+  }
+
+  /**
+   * Require token with DELETE_POSTS permission
+   */
+  requireDeleteAccess() {
+    return createAuthMiddleware({
+      validateToken: this.validateToken,
+      requiredPermission: Permission.DELETE_POSTS,
+      requiredTokenType: TokenType.ACCESS
+    });
+  }
+
+  /**
    * Require admin permissions
    */
   requireAdminAccess() {

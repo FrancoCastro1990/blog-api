@@ -1,4 +1,4 @@
-export { Post, CreatePostData } from './Post';
+export { Post, CreatePostData, UpdatePostData } from './Post';
 export { 
   User, 
   Permission, 

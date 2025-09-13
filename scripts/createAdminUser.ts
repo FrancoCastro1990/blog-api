@@ -47,7 +47,13 @@ async function createAdminUser() {
     const adminUser = await userRepository.create({
       email: adminEmail,
       passwordHash: hashedPassword,
-      permissions: [Permission.READ_POSTS, Permission.CREATE_POSTS, Permission.ADMIN],
+      permissions: [
+        Permission.READ_POSTS, 
+        Permission.CREATE_POSTS, 
+        Permission.UPDATE_POSTS,
+        Permission.DELETE_POSTS,
+        Permission.ADMIN
+      ],
       refreshTokens: []
     });
 

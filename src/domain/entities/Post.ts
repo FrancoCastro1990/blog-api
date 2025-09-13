@@ -19,3 +19,12 @@ export interface CreatePostData {
   content: string;
   author?: string;
 }
+
+/**
+ * Data that can be updated in an existing post (all fields optional)
+ */
+export interface UpdatePostData {
+  title?: string;
+  content?: string;
+  author?: string | null;
+}
